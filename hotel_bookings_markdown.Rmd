@@ -1,0 +1,129 @@
+---
+title: "Hotel Bookings"
+author: "Sarah Kinnison"
+date: "2023-02-08"
+output: html_document
+---
+
+## Setting up the Environment.
+
+Firstly I downloaded tidyverse, ggplot, and rmarkdown. Then called these packages using library to help set up an environment for analysis.
+
+```{r echo=TRUE,message=FALSE}
+  library(tidyverse) 
+  library(ggplot2) 
+  library(rmarkdown) 
+```
+
+## Porting in the Data.
+
+To begin looking at the hotel booking data it had to be ported into R. This file gets brought into R from an Excel file. The code to accomplish that is as follows.
+
+```{r}
+    library(readxl)
+    hotel_bookings <- read_excel("C:/Users/sarah/Desktop/hotel_bookings.xlsx")
+```
+
+## First Look at the Data.
+
+Once the data was successfully ported into R I wanted to see the file successfully open, get a glimpse at both the first six rows, and view all the column names.
+
+Firstly viewing the file.
+
+```{r, eval = FALSE}
+  View(hotel_bookings)
+```
+
+Secondly viewing the first six rows,
+
+```{r}
+  head(hotel_bookings)
+```
+
+Thirdly viewing all the column names,
+
+```{r}
+  colnames(hotel_bookings)
+```
+
+## Goal of the Analysis.
+
+The goals of this analysis is
+
+1.  What factors went into hotel bookings? Time? Location? Deposit?
+
+2.  What distribution channel did different customer types use?
+
+3.  Does the presence of children impact hotel bookings? 
+
+## 1. What factors went into hotel bookings? Time? Location? Deposit?
+
+The first question asked when digging into this data was what time were the most bookings? Did people have certain months where they would be more likely to take a trip?
+```{r, out.width = '110%', echo=TRUE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping=aes(x = arrival_date_month,fill = hotel)) +
+  scale_x_discrete(limits = month.name) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
+  labs(title = "Bookings by Month", x = "Month", y = "Number of bookings")
+```
+What I found very interesting about this graph is that the bookings seem to operate in waves. It seems as though each month was higher than the previous until a major jump down occurred. The most popular time was during the summer months. 
+
+
+The next thing I wanted to visualize was how many bookings there were of each type. From the previous graph it looks like there may be more city hotel bookings than there are resort hotel bookings. 
+```{r, out.width = '110%', echo=TRUE}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping=aes(x = hotel)) +
+  labs(title = "Type of Hotel", subtitle = "Count of how many sessions at each hotel type.", x = "Type of hotel", y = "Number of bookings")
+```
+This visual shows that there were a little shy of 80,000 city bookings but only around 40,000 resort bookings. Implying that the city bookings are almost twice as popular as the resort bookings. 
+
+Lastly for this question how were the deposits for each type of hotel?
+```{r, out.width = '110%'}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping=aes(x=deposit_type,fill=hotel)) + 
+  facet_grid(~hotel) +
+  labs(title = "Hotel Deposits", subtitle = "Breaking apart the type of hotel and their deposits", x = "Deposit type", y = "Number of bookings")
+```
+Looking at is graph it seems like both the city hotel and the resort hotel for the most part did not do deposits. 
+However when they did take a deposit in almost all cases they were nonrefundable. 
+
+## 2. What distribution channel did different customer types use?
+It is important to look at both distribution channels and customer types to get an accurate representation of how people are booking their hotels. 
+```{r, out.width = '110%'}
+   ggplot(data = hotel_bookings) +
+    geom_bar(mapping = aes(x = distribution_channel, fill = customer_type)) + 
+    labs(title = "Distribution channel by customer type", subtitle = "A comparison of the distibution channels against the customer types.", x = "Distribution channel", y = "Number of bookings")
+```
+From this visual we can see that the most common distribution channel by far was TA/TO with the biggest customer group being Transient. 
+
+## 3. Does the presence of children impact hotel bookings? 
+When traveling with children does that impact how far in advance parents book the hotel?
+```{r, out.width = '110%'}
+ggplot(data = hotel_bookings) + 
+  geom_point(mapping = aes(x = lead_time, y = children)) +
+  labs(title = " Number of children VS Booking notice", subtitle = "This compares how many children someone has to how far in advance they book.", x = "Lead time (Days)", y = "Number of Children")
+```
+Looking at this visual, it seems as though the more children someone has, the less lead time they give for their bookings. 
+
+The next question I wanted to answer was do parents typically stay with children over the weekend?
+```{r, out.width = '110%'}
+  ggplot(data = hotel_bookings) +
+  geom_point(mapping = aes(x = stays_in_weekend_nights, y = children)) +
+  labs(title = "Number of children VS Weekend nights", subtitle = "This compares how many children someone has to if they stay over the weekend", x = "Number of weekend nights", y = "Number of Children")
+```
+This visual shows that people with more children tend to stay less weekend nights than people with less children. 
+
+
+## Final Conclusions:
+
+- The three most popular months was August, July and May. 
+
+- People stay in city hotels more than they do in resort hotels. 
+
+- Most hotels do not take a deposit.
+
+- The most popular distribution channel was TA/TO with the biggest customer group being Transient. 
+
+- The more children someone has, the less lead time they give. 
+
+- The more children someone has, the less weekend nights they stay.
